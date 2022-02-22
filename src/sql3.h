@@ -25,7 +25,6 @@ typedef struct st_db
  */
 int db_open(db_t *db);
 
-
 int db_errmsg(db_t *db);
 int db_close(db_t *db);
 int db_setName(db_t *db, char *name);
