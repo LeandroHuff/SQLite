@@ -19,21 +19,28 @@ int main(void)
 
 	db_setName(pdb, "SQL_Database.db");
 
-	printf("Create SQLite Database: %s ...\n", db_getName(pdb));
+	printf("Creating/Opening SQLite Database: %s ...\n", db_getName(pdb));
 
 	if( db_open(pdb) != SQLITE_OK)
 	{
-		(void)db_errmsg(pdb);
+		printf("SQLite error message:%s\n", db_getErrorMsg(pdb));
 		return(EXIT_FAILURE);
 	}
 
-	puts("Successful!");
+	printf("Create/Open SQLite database result message:%s\n", db_getErrorMsg(pdb));
+
+	puts("Closing SQLite Database...");
 
 	if (db_close(pdb) != SQLITE_OK)
 	{
-		(void)db_errmsg(pdb);
+	  printf("SQLite error message:%s\n", db_getErrorMsg(pdb));
 		return(EXIT_FAILURE);
 	}
+
+	printf("Close SQLite database rc:%d\tresult:%d\tmessage:%s\n",
+	    pdb->rc,
+	    db_getExtendedErrorCode(pdb),
+	    db_getErrStr(db_getExtendedErrorCode(pdb)));
 
 	return EXIT_SUCCESS;
 }
