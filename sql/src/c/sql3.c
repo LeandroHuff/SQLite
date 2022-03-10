@@ -7,6 +7,7 @@
  *******************************************************************************
  */
 
+#include <stdio.h>
 #include "sql3.h"
 
 /*
@@ -19,6 +20,44 @@
  *  Get error messages
  *******************************************************************************
  */
+
+/*
+ *******************************************************************************
+ * Description:
+ *  Get the SQLite library version number.
+ *
+ *  Parameters:
+ *    None
+ *
+ *  Return:
+ *    SQLite version number.
+ *******************************************************************************
+ */
+int db_getLibVersion(void)
+{
+  return sqlite3_libversion_number();
+}
+
+int db_updateDatabaseVersion( db_t *db )
+{
+	int result = SQLITE_ERROR;
+	int version = db_getLibVersion();
+	
+	if (version > 0)
+	{
+		db->version.build = (version % 1000);
+		db->version.minor = ((version / 1000) % 1000);
+		db->version.major = (version / 1000000);
+		result = SQLITE_OK;
+	}
+	
+	return (result);
+}
+
+db_version_t *db_getDatabaseVersion( db_t *db )
+{
+	return (&db->version);
+}
 
 /*
  *******************************************************************************
@@ -321,10 +360,42 @@ const char* db_getErrStr(int err)
  *******************************************************************************
  * SQLite3 tables functions to:
  *  Create
+ *  Modify/Update
  *  Delete
- *  Modify
  *  Set db tables's name
  *  Get db tables's name
  *******************************************************************************
  */
+int db_createTable( db_t *db, char *table, char *schema)
+{
+  int result = -1;
+
+  /* check paramters */
+  if( (    db == NULL) ||
+      ( table == NULL) ||
+      (schema == NULL) )
+  {
+    return result;
+  }
+
+  /* reserve a memory buffer */
+  char text[256] = {0};
+  char *sql_error = NULL;
+
+  /* store the SQL command into memory buffer */
+  int len = snprintf(text, sizeof(text), "CREATE TABLE %s(%s);", table, schema );
+
+  /* check how many char could be stored into memory buffer,
+   * if less then needed, return an error to the caller. */
+  if (len >= sizeof(text))
+  {
+    return result;
+  }
+
+  result = sqlite3_exec(db->hnd, text, 0, 0, &sql_error);
+  db->rc = result;
+  sqlite3_free(sql_error);
+
+  return result;
+}
 

@@ -11,17 +11,33 @@
 #include <stddef.h>
 #include <sqlite3.h>
 
+#pragma pack(push, 1)
+struct st_lib_version
+{
+	int16_t major;
+	int16_t minor;
+	int16_t build;
+};
+#pragma pack(pop)
+
+typedef struct st_lib_version db_version_t;
+
 /**
  * @struct st_db
  * @brief Database structure to aggregate sqlite3 variables into a unique and
  *        concise structure to be used as a defined user type.
  */
-typedef struct st_db
+#pragma pack(push, 1)
+struct st_db
 {
 	char    *name;	/*!< Pointer to database name. */
 	sqlite3 *hnd;	  /*!< Pointer to sqlite3 address structure. */
 	int     rc;		  /*!< Hold last sqlite execution result. */
-} db_t;				    /*!< SQLite3 database structure type. */
+	db_version_t version; /*!< Store SQLite library version into  database structure */
+};				    /*!< SQLite3 database structure type. */
+#pragma pack(pop)
+
+typedef struct st_db db_t;
 
 /**!
  *******************************************************************************
@@ -38,6 +54,11 @@ typedef struct st_db
  *******************************************************************************
 */
 
+
+
+int db_getLibVersion(void);
+int db_updateDatabaseVersion( db_t *db );
+db_version_t *db_getDatabaseVersion( db_t *db );
 
 /**
  * @brief Open a database file or create one if it doesn't exist.
@@ -128,6 +149,6 @@ const char* db_getErrStr(int);
  * Get db tables's name
  *******************************************************************************
 */
-
+int db_createTable( db_t *db, char *table, char *schema);
 
 #endif /* SQL3_H_ */
