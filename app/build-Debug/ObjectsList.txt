@@ -1,0 +1,1 @@
+./build-Debug//up_sql_src_c_sql3.c.o ./build-Debug//main.c.o

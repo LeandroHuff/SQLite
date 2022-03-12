@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "sql3.h"
+#include "../sql/src/c/sql3.h"
 
 int main(void)
 {

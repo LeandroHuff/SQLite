@@ -8,7 +8,8 @@
  */
 
 #include <stdio.h>
-#include "sql3.h"
+#include <sqlite3.h>
+#include "../sql/src/c/sql3.h"
 
 /*
  *******************************************************************************
@@ -42,7 +43,7 @@ int db_updateDatabaseVersion( db_t *db )
 {
 	int result = SQLITE_ERROR;
 	int version = db_getLibVersion();
-	
+
 	if (version > 0)
 	{
 		db->version.build = (version % 1000);
@@ -50,7 +51,7 @@ int db_updateDatabaseVersion( db_t *db )
 		db->version.major = (version / 1000000);
 		result = SQLITE_OK;
 	}
-	
+
 	return (result);
 }
 
